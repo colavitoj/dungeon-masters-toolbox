@@ -1,4 +1,5 @@
 import mongodb from "mongodb"
+const ObjectId = mongodb.ObjectID
 let midb
 
 export default class MidbDao {
@@ -65,9 +66,26 @@ export default class MidbDao {
     }
 
 
+    static async addItem(itemId, user, itemname, description, effect, itemslot, date) {
+        try {
+            const itemDoc = {
+                name: user.name,
+                user_id: user._id,
+                date: date,
+                itemname: itemname,
+                description: description,
+                effect: effect,
+                itemslot: itemslot,
+                item_id: ObjectId(itemId),
+            }
+            return await Items.insertOne(itemDoc)
+        } catch (e) {
+            console.error(`Unable to post new item: ${e}`)
+            return { error: e }
+        }
+    }
 
-
-
+    static async updateItem(item)
 
 
 }

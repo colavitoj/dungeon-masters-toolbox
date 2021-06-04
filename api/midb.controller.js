@@ -32,4 +32,85 @@ export default class MidbController {
         }
         res.json(response)
     }
+
+    static async apiPostItem(req, res, next) {
+        try {
+            const itemId = req.body.item_id
+            const description = req.body.description
+            const itemname = req.body.itemname
+            const itemslot = req.body.itemslot
+            const effect = req.body.effect
+
+            const userInfo = {
+                _id: req.body.user_id,
+                name: req.body.name,
+
+            }
+            const date = new Date()
+
+            const ItemResponse = await MidbDao.addItem(
+                itemId,
+                userInfo,
+                description,
+                itemname,
+                itemslot,
+                effect,
+                date,
+            )
+            res.json({ status: 'Success' })
+        } catch (e) {
+            res.status(500).json({ error: e.message })
+        }
+    }
+
+    static async apiUpdateItem(req, res, next) {
+        try {
+            //could be problematic here - moved from .text to individual req.body items
+            const itemId = req.body.item_id
+            const description = req.body.description
+            const itemname = req.body.itemname
+            const itemslot = req.body.itemslot
+            const effect = req.body.effect
+            const date = new Date()
+
+            const itemResponse = await MidbDao.updateItem(
+                itemId,
+                req.body.user_id,
+                description,
+                itemname,
+                itemslot,
+                effect,
+                date,
+            )
+
+            var { error } = itemResponse
+            if (error) {
+                res.status(400).json({ error })
+            }
+            if (itemResponse.modifiedCount === 0) {
+                throw new Error(
+                    "Unable to update item - encountered error.",
+                )
+            }
+            res.json({ status: "success" })
+        } catch (e) {
+            res.status(500).json({ error: e.message })
+        }
+
+    }
+
+    static async apiDeleteItem(req, res, next) {
+        try {
+            const itemId = req.query.id
+            const userId = req.body.user_id
+            console.log(itemId)
+            const itemResponse = await MidbDao.deleteIteM(
+                itemId,
+                userId,
+            )
+            res.json({ status: 'Success' })
+        } catch (e) {
+            res.status(500).json({ error: e.message })
+        }
+    }
 }

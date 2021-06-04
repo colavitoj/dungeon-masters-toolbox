@@ -5,4 +5,10 @@ const router = express.Router()
 
 router.route("/").get(MidbController.apiGetItems)
 
+router
+    .route("/items")
+    .post(MidbController.apiPostItem)
+    .put(MidbController.apiUpdateItem)
+    .delete(MidbController.apiDeleteItem)
+
 export default router
