@@ -78,14 +78,46 @@ export default class MidbDao {
                 itemslot: itemslot,
                 item_id: ObjectId(itemId),
             }
-            return await Items.insertOne(itemDoc)
+            return await midb.insertOne(itemDoc)
         } catch (e) {
             console.error(`Unable to post new item: ${e}`)
             return { error: e }
         }
     }
 
-    static async updateItem(item)
+    static async updateItem(itemId, userId, itemname, description, effect, itemslot, date) {
+        try {
+            const updateResponse = await midb.updateOne(
+                { user_id: userId, _id: ObjectId(itemId) },
+                { $set: { itemname: itemname, description: description, effect: effect, itemslot: itemslot, date: date } },
+            )
+            return updateResponse
+        } catch (e) {
+            console.error(`Unable to update this item: ${e}`)
+            return { error: e }
+        }
+    }
 
-
+    static async deleteItem(itemId, userId) {
+        try {
+            const deleteResponse = await midb.deleteOne({
+                _id: ObjectId(itemId),
+                user_id: userId,
+            })
+            return deleteResponse
+        } catch (e) {
+            console.error(`Unable to delete this item: ${e}`)
+            return { error: e }
+        }
+    }
+    static async getItemslots() {
+        let itemslots = []
+        try {
+            itemslots = await midb.distinct("itemslot")
+            return itemslots
+        } catch (e) {
+            console.error(`Unable to get item by slot, ${e}`)
+            return itemslots
+        }
+    }
 }

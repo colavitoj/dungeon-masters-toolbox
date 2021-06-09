@@ -4,6 +4,13 @@ import MidbController from "./midb.controller.js"
 const router = express.Router()
 
 router.route("/").get(MidbController.apiGetItems)
+// router.route("/id:id").get(MidbController.apiGetItemById)
+router.route("/itemslots").get(MidbController.apiGetItemslots)
+
+
+
+
+
 
 router
     .route("/items")

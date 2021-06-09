@@ -103,14 +103,37 @@ export default class MidbController {
         try {
             const itemId = req.query.id
             const userId = req.body.user_id
-            console.log(itemId)
-            const itemResponse = await MidbDao.deleteIteM(
+            // console.log(itemId)
+            const itemResponse = await MidbDao.deleteItem(
                 itemId,
                 userId,
             )
             res.json({ status: 'Success' })
         } catch (e) {
             res.status(500).json({ error: e.message })
+        }
+    }
+    static async apiGetItemById(req, res, next) {
+        try {
+            let id = req.params.id || {}
+            let item = await MidbDao.getItemById(id)
+            if (!item) {
+                res.status(404).json({ error: "No item found" })
+                return
+            }
+            res.json(item)
+        } catch (e) {
+            console.log(`Api, ${e}`)
+            res.status(500).json({ error: e })
+        }
+    }
+    static async apiGetItemslots(req, res, next) {
+        try {
+            let itemslots = await MidbDao.getItemslots()
+            res.json(itemslots)
+        } catch (e) {
+            console.log(`Api, ${e}`)
+            res.status(500).json({ error: e })
         }
     }
 }
