@@ -7,10 +7,20 @@ import Item from "./components/item"
 import Login from "./components/login"
 
 function App() {
+
+  const [user, setUser] = React.useState(null)
+
+  async function login(user = null) {
+    setUser(user);
+  }
+  async function logout() {
+    setUser(null);
+  }
+
   return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-dark">
-        <a href="/restaurants" className="navbar-brand">
+        <a href="/items" className="navbar-brand">
           Magic Items
         </a>
         <div className="navbar-nav mr-auto">
@@ -33,6 +43,30 @@ function App() {
           </li>
         </div>
       </nav>
+
+      <div className="container mt-3">
+        <Switch>
+          <Route exact path={["/", "/items"]} component={ItemList} />
+          <Route
+            path="/items/:id/items"
+            render={(props) => (
+              <AddItem {...props} user={user} />
+            )}
+          />
+          <Route
+            path="/items/:id"
+            render={(props) => (
+              <Item {...props} user={user} />
+            )}
+          />
+          <Route
+            path="/login"
+            render={(props) => (
+              <Login {...props} login={login} />
+            )}
+          />
+        </Switch>
+      </div>
     </div>
   )
 }
