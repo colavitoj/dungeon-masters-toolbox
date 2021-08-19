@@ -9,7 +9,7 @@ export default class MidbDao {
         }
         try {
             midb = await conn.db(process.env.MIDB_NS).collection("Items")
-            console.log("Connection established")
+            console.log("Connection established with Items")
         } catch (e) {
             console.error(
                 `Unable to establish a connection to midbDAO: $(e)`,
@@ -19,21 +19,35 @@ export default class MidbDao {
     }
 
 
+
+
+
     static async getItems({
         filters = null,
         page = 0,
         itemsPerPage = 20,
     } = {}) {
         let query
+
+
+
         if (filters) {
+
             if ('itemname' in filters) {
-                query = { $text: { $search: filters['itemname'] } }
+                query = { "itemname": new RegExp(filters['itemname'], 'i') }
             } else if ("description" in filters) {
                 query = { "description": { $eq: filters['description'] } }
             } else if ("effect" in filters) {
                 query = { "effect": { $eq: filters['effect'] } }
             } else if ("itemslot" in filters) {
                 query = { "itemslot": { $eq: filters['itemslot'] } }
+            } else if ("id" in filters) {
+                console.log(filters.id)
+                console.log(ObjectId(filters.id))
+                query = { "_id": { $eq: ObjectId(filters.id) } }
+
+
+
             }
 
         }
@@ -42,7 +56,9 @@ export default class MidbDao {
 
         try {
             cursor = await midb
+
                 .find(query)
+
         } catch (e) {
             console.error(`Unable to issue find command, ${e}`)
             return { itemsList: [], totalNumItems: 0 }
@@ -64,9 +80,55 @@ export default class MidbDao {
         }
 
     }
+    static async getItemByID(id) {
+        try {
+
+            const pipeline = [
+                {
+                    $match: {
+                        _id: new ObjectId(id),
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "Comments",
+                        let: {
+                            id: "$_id",
+                        },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ["$item_id", "$$id"],
+                                    },
+                                },
+                            },
+                            {
+                                $sort: {
+                                    date: -1,
+                                },
+                            },
+                        ],
+                        as: "comments",
+                    },
+                },
+                {
+                    $addFields: {
+                        comments: "$comments",
+                    },
+                },
+            ]
+            return await midb.aggregate(pipeline).next()
+        } catch (e) {
+            console.error(`Something went wrong in getItemByID: ${e}`)
+            throw e
+        }
+    }
 
 
-    static async addItem(itemId, user, itemname, description, effect, itemslot, date) {
+
+
+    static async addItem(itemId, user, description, itemname, itemslot, effect, date) {
         try {
             const itemDoc = {
                 name: user.name,
@@ -76,7 +138,7 @@ export default class MidbDao {
                 description: description,
                 effect: effect,
                 itemslot: itemslot,
-                item_id: ObjectId(itemId),
+                item_id: ObjectId(itemId)
             }
             return await midb.insertOne(itemDoc)
         } catch (e) {
@@ -85,13 +147,16 @@ export default class MidbDao {
         }
     }
 
-    static async updateItem(itemId, userId, itemname, description, effect, itemslot, date) {
+    static async updateItem(itemId, userId, description, itemname, itemslot, effect, date) {
         try {
+
             const updateResponse = await midb.updateOne(
                 { user_id: userId, _id: ObjectId(itemId) },
                 { $set: { itemname: itemname, description: description, effect: effect, itemslot: itemslot, date: date } },
             )
+
             return updateResponse
+
         } catch (e) {
             console.error(`Unable to update this item: ${e}`)
             return { error: e }
@@ -104,6 +169,7 @@ export default class MidbDao {
                 _id: ObjectId(itemId),
                 user_id: userId,
             })
+
             return deleteResponse
         } catch (e) {
             console.error(`Unable to delete this item: ${e}`)
@@ -120,4 +186,6 @@ export default class MidbDao {
             return itemslots
         }
     }
+
+
 }

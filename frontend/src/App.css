@@ -36,3 +36,62 @@
     transform: rotate(360deg);
   }
 }
+
+a{
+  text-decoration-color: #512DA8;
+}
+
+.deleteBtn {
+  margin-right: 50px;
+}
+
+
+.leaflet-container {
+  width: 65%;
+  height: 55%;
+}
+
+.MuiContainer-root {
+  height: 65%
+}
+
+.MuiListItem-root .MuiTouchRipple-child {
+  background-color: #512DA8;
+}
+
+.MuiButton-root .MuiTouchRipple-child {
+  background-color: #512DA8;
+}                                                                 
+
+body {
+  font-family: sans-serif;
+  background: #fff;
+}
+
+form {
+  margin: 1rem auto 0;
+  width: 24rem;
+
+  .MuiFormControl-root,
+  .MuiTextField-root,
+  .MuiButton-root {
+    width: inherit;
+  }
+
+  .MuiFormControl-root,
+  .MuiFormControlLabel-root,
+  .MuiTextField-root {
+    margin-bottom: 1rem;
+  }
+
+  .MuiFormControl-root:nth-child(2) {
+    margin-bottom: 1.5rem;
+  }
+
+  .MuiFormGroup-root .MuiFormControlLabel-root {
+    margin-bottom: 0;
+  }
+
+  
+
+}

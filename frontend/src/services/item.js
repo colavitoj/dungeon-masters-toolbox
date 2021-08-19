@@ -1,35 +1,54 @@
-import http from '../http-common';
-import React from 'react';
+import axios from '../http-common';
 
-class ItemDataService extends React.Component {
+class ItemDataService {
+    http = null
+
+    constructor(authToken) {
+        axios.defaults.headers.common['Authorization'] = "Bearer " + authToken
+        this.http = axios
+    }
+
+
     getAll(page = 0) {
-        return http.get(`?page=${page}`);
+        return this.http.get(`/items?page=${page}`);
     }
 
     get(id) {
-        return http.get(`/id/${id}`);
+        return this.http.get(`/item?id=${id}`);
     }
 
     find(query, by = "name", page = 0) {
-        return http.get(`?${by}=${query}&page=${page}`);
+        return this.http.get(`items?${by}=${query}&page=${page}`);
     }
 
     createItem(data) {
-        return http.post("/items", data);
+        return this.http.post("/items", data);
     }
 
     updateItem(data) {
-        return http.put("/items", data);
+        return this.http.put("/items", data);
     }
 
     deleteItem(id, userId) {
-        return http.delete(`/items?id=${id}`, { data: { user_id: userId } });
+        console.log(userId)
+        return this.http.delete(`/items?id=${id}`, { data: { user_id: userId } });
     }
 
     getItemslot(id) {
-        return http.get(`/itemslot`);
+        return this.http.get(`/itemslots`);
+    }
+    createComment(data) {
+        return this.http.post("/comment", data);
+    }
+
+    updateComment(data) {
+        return this.http.put("/comment", data);
+    }
+
+    deleteComment(id, userId) {
+        return this.http.delete(`/comment?id=${id}`, { data: { user_id: userId } });
     }
 
 }
 
-export default new ItemDataService()
+export default ItemDataService

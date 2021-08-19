@@ -2,6 +2,7 @@ import MidbDao from "../dao/midbDAO.js"
 
 export default class MidbController {
     static async apiGetItems(req, res, next) {
+
         const itemsPerPage = req.query.itemsPerPage ? parseInt(req.query.itemsPerPage, 10) : 20
         const page = req.query.page ? parseInt(req.query.page, 10) : 0
 
@@ -14,6 +15,8 @@ export default class MidbController {
             filters.effect = req.query.effect
         } else if (req.query.itemslot) {
             filters.itemslot = req.query.itemslot
+        } else if (req.query.id) {
+            filters.id = req.query.id
         }
 
 
@@ -35,6 +38,7 @@ export default class MidbController {
 
     static async apiPostItem(req, res, next) {
         try {
+            console.log(req)
             const itemId = req.body.item_id
             const description = req.body.description
             const itemname = req.body.itemname
@@ -44,6 +48,7 @@ export default class MidbController {
             const userInfo = {
                 _id: req.body.user_id,
                 name: req.body.name,
+                userimg: req.body.user_img
 
             }
             const date = new Date()
@@ -65,13 +70,15 @@ export default class MidbController {
 
     static async apiUpdateItem(req, res, next) {
         try {
-            //could be problematic here - moved from .text to individual req.body items
+
+
             const itemId = req.body.item_id
             const description = req.body.description
             const itemname = req.body.itemname
             const itemslot = req.body.itemslot
             const effect = req.body.effect
             const date = new Date()
+            const user_id = req.body.user_id
 
             const itemResponse = await MidbDao.updateItem(
                 itemId,
@@ -103,7 +110,6 @@ export default class MidbController {
         try {
             const itemId = req.query.id
             const userId = req.body.user_id
-            // console.log(itemId)
             const itemResponse = await MidbDao.deleteItem(
                 itemId,
                 userId,
@@ -114,16 +120,18 @@ export default class MidbController {
         }
     }
     static async apiGetItemById(req, res, next) {
+
         try {
-            let id = req.params.id || {}
-            let item = await MidbDao.getItemById(id)
+
+            let id = req.query.id || {}
+            let item = await MidbDao.getItemByID(id)
             if (!item) {
                 res.status(404).json({ error: "No item found" })
                 return
             }
             res.json(item)
         } catch (e) {
-            console.log(`Api, ${e}`)
+            console.log(`api, ${e}`)
             res.status(500).json({ error: e })
         }
     }
@@ -132,7 +140,7 @@ export default class MidbController {
             let itemslots = await MidbDao.getItemslots()
             res.json(itemslots)
         } catch (e) {
-            console.log(`Api, ${e}`)
+            console.log(`api, ${e}`)
             res.status(500).json({ error: e })
         }
     }

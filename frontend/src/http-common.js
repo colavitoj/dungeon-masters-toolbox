@@ -1,8 +1,11 @@
 import axios from 'axios'
 
+
+
 export default axios.create({
-    baseURL: "http://localhost:5000//api/v1/midb",
+    baseURL: "http://localhost:5000/api/v1/midb",
     headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
+
     }
-});
+})

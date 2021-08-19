@@ -2,6 +2,7 @@ import app from './server.js'
 import mongodb from 'mongodb'
 import dotenv from 'dotenv'
 import MidbDao from "./dao/midbDAO.js"
+import commentsDAO from "./dao/commentsDAO.js"
 
 dotenv.config()
 const MongoClient = mongodb.MongoClient
@@ -23,7 +24,9 @@ MongoClient.connect(
     })
     .then(async client => {
         await MidbDao.injectDB(client)
+        await commentsDAO.injectDB(client)
         app.listen(port, () => {
             console.log(`Listening on port ${port}`)
         })
     })
+
